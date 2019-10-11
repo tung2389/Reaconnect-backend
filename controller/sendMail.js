@@ -21,7 +21,6 @@ function sendMail(email) {
         if (err) {
             return console.log(err);
         }
-        console.log("Successfully sent")
     });
 }
 
