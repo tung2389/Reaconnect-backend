@@ -15,7 +15,7 @@ const MONGO_URL = process.env.MONGO_URL
 const PORT = process.env.PORT || 3001
 
 mongoose.connect(
-    MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true }, err => {
+    MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }, err => {
         if(err) {
             throw err;
         }
