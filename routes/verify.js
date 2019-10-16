@@ -10,7 +10,12 @@ router.get('/:id', (req, res) => {
         }
         else {
             user.verified = true;
+            user.save((err) => {
+                if(err) console.log(err)
+            })
             res.status(200).send("Your account has been verified. Now you can login")
         }
     })
 })
+
+module.exports = router;

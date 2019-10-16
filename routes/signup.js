@@ -8,7 +8,7 @@ const router = express.Router()
 router.post('/', (req, res) => {
     const { email, password } = req.body
     userModel.findOne({email: email}, (err, user) => {
-        if(user && !user.verified) {
+        if(user && user.verified) {
             res.status(400).send("That email has already been registered")
         }
         else {

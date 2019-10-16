@@ -5,7 +5,7 @@ require('dotenv').config()
 
 const router = express.Router();
 
-router.post("/api/login", (req, res, next) => {
+router.post("/", (req, res, next) => {
     passport.authenticate("local", {session: false}, (err, user, info) => {
         if(err || !user) {
             return res.status(400).json({
