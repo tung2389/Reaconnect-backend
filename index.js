@@ -9,6 +9,8 @@ require('dotenv').config()
 const login = require('./routes/login')
 const signup = require('./routes/signup')
 const verify = require('./routes/verify')
+const newpost = require('./routes/newpost')
+const post = require('./routes/post')
 
 const app = express();
 
@@ -34,6 +36,8 @@ app.get("/",(req,res) => {
 app.use("/api/login", login)
 app.use("/api/signup", signup)
 app.use("/api/verify", verify)
+app.use("/api/newpost", newpost)
+app.use("/api/post", post)
 
 app.listen(PORT, function() {
     console.log(`Server is running at port ${PORT}`)

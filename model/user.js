@@ -9,6 +9,10 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
       },
+      username: {
+        type: String,
+        required: true
+      },
       verified: {
         type: Boolean,
         required: true
@@ -19,7 +23,7 @@ const userSchema = mongoose.Schema({
       }
 });
 
-userSchema.index( { createdAt: 1 }, { expireAfterSeconds: 120, partialFilterExpression: { verified: false } })
+userSchema.index( { createdAt: 1 }, { expireAfterSeconds: 3600 * 24 * 1, partialFilterExpression: { verified: false } })
 
 const user = mongoose.model('user', userSchema)
 

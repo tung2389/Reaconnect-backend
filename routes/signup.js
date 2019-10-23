@@ -6,7 +6,7 @@ const userModel = require('../model/user')
 const router = express.Router()
 
 router.post('/', (req, res) => {
-    const { email, password } = req.body
+    const { email, password, username } = req.body
     userModel.findOne({email: email}, (err, user) => {
         if(user && user.verified) {
             res.status(400).send("That email has already been registered")
@@ -18,6 +18,7 @@ router.post('/', (req, res) => {
             const newUser = new userModel({
                 email: email,
                 password: password,
+                username: username,
                 verified: false,
                 createdAt: new Date()
             })
