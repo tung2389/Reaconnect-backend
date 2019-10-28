@@ -10,11 +10,15 @@ router.post('/', (req, res) => {
     const { email, password, confirmPassword, username } = req.body
     const validation = validateAccount(email, password, confirmPassword, username);
     if(validation !== true) {
-        return res.status(400).send(validation)
+        return res.status(400).json({
+			message: validation
+		})
     }
     userModel.findOne({email: email}, (err, user) => {
         if(user && user.verified) {
-            return res.status(400).send("That email has already been registered")
+            return res.status(400).json({
+				message: "That email has already been registered"
+			})
         }
         else {
             if(user) {
@@ -33,7 +37,9 @@ router.post('/', (req, res) => {
                     newUser.save(err => {
                         if(err) return console.log(err);
                         sendMail(email, newUser._id)
-                        res.send("Please check your email to verify your account")
+                        res.json({
+							message: "Please check your email to verify your account"
+						})
                     })
                 })
             })

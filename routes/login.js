@@ -8,9 +8,7 @@ const router = express.Router();
 router.post("/", (req, res, next) => {
     passport.authenticate("local", {session: false}, (err, user, info) => {
         if(err || !user) {
-            return res.status(400).json({
-                message: info
-            })
+            return res.status(400).send(info)
         }
         //Not use session, so there is no need to use req.login()
         const jwtToken = jwt.sign({id: user.id}, process.env.JWT_SECRET)
