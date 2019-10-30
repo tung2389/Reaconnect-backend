@@ -1,20 +1,24 @@
 const validator = require('validator')
 
-function validateAccount(email, password, confirmPassword, username) {
-    let errors = []
+function validateSignup(email, password, confirmPassword, username) {
+    let errors = {}
     if(validator.isEmail(email) === false) {
-        errors.push("Invalid email")
+        errors.email = "Invalid email"
     }
     if(password.length < 8) {
-        errors.push("Your password must have at least 8 characters")
+        errors.password = "Your password must have at least 8 characters"
     }
     if(password !== confirmPassword) {
-        errors.push("Two passwords don't match")
+        errors.confirmPassword = "Two passwords don't match"
     }
-    if(username === undefined) {
-        errors.push("Username cannot be empty")
+    if(!username) {
+        errors.username = "Username cannot be empty"
     }
-    if(errors.length === 0) {
+    if(!errors.hasOwnProperty('email') &&
+       !errors.hasOwnProperty('password') &&
+       !errors.hasOwnProperty('confirmPassword') &&
+       !errors.hasOwnProperty('usernam')
+    ) {
         return true;
     }
     else {
@@ -22,4 +26,22 @@ function validateAccount(email, password, confirmPassword, username) {
     }
 }
 
-module.exports = validateAccount
+function validateLogin(email, password) {
+    let errors = {}
+    if(validator.isEmail(email) === false) {
+        errors.email = "Invalid email"
+    }
+    if(password.length < 8) {
+        errors.password = "Your password must have at least 8 characters"
+    }
+    if(!errors.hasOwnProperty('email') &&
+       !errors.hasOwnProperty('password')
+    ) {
+        return true
+    }
+    else {
+        return errors
+    }
+}
+
+module.exports = { validateSignup, validateLogin }

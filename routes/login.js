@@ -3,9 +3,15 @@ const passport = require('passport')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
+const { validateLogin } = require('../controller/validateAccount')
+
 const router = express.Router();
 
 router.post("/", (req, res, next) => {
+    let validation = validateLogin(req.body.email, req.body.password)
+    if(validation !== true) {
+        return res.status(400).send(validation)
+    }
     passport.authenticate("local", {session: false}, (err, user, info) => {
         if(err || !user) {
             return res.status(400).send(info)
