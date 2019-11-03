@@ -3,8 +3,7 @@ const passport = require('passport')
 const postModel = require('../model/post')
 
 const router = express.Router();
-router.post('/', (req, res, next) => {
-    const { content } = req.body;
+router.get('/', (req, res, next) => {
     passport.authenticate('jwt', {session: false}, (err, user) => {
         if(err) {
             return res.status(400).json({
@@ -16,19 +15,17 @@ router.post('/', (req, res, next) => {
                 message: "You must logged in first"
             })
         }
-        const newPost = postModel({
-            authorId: user._id,
-            author: user.username,
-            content: content,
-            createdAt: new Date()
-        })
-        newPost.save((err) => {
-            if(err) return console.log(err)
-            res.json({
-                message: "Your post has been uploaded",
-                post: newPost
-            })
-        })
+        const { lastDate, limit } = req.query;
+        postModel.find({createdAt: {$lt: lastDate}})
+                 .limit(Number(limit))
+                 .then(data => {
+                     res.send(data)
+                 })
+                 .catch(err => {
+                     res.status(400).json({
+                         message: "Error occured"
+                     })
+                 })
     })(req, res, next)
 })
 

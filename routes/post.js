@@ -17,25 +17,14 @@ router.get('/:id', (req, res, next) => {
                 message: "You must logged in first"
             })
         }
-        else {
-            postModel.findById(postId, (err, post) => {
-                if(err || !post) {
-                    return res.status(400).json({
-                        message: "404 Not found"
-                    })
-                }
-                userModel.findById(post.authorId, (err, user) => {
-                    if(err || !user) {
-                        user.username = "Undefined"
-                    }
+        postModel.findById(postId, (err, post) => {
+            if(err || !post) {
+                return res.status(400).json({
+                    message: "404 Not found"
                 })
-                res.json({
-                    content: post.content,
-                    author: user.username,
-                    createdAt: post.createdAt,
-                })
-            })
-        }
+            }
+            res.send(post)
+        })
     })(req, res, next)
 })
 
