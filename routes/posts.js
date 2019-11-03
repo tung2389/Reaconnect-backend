@@ -17,6 +17,7 @@ router.get('/', (req, res, next) => {
         }
         const { lastDate, limit } = req.query;
         postModel.find({createdAt: {$lt: lastDate}})
+                 .sort({createdAt: -1})
                  .limit(Number(limit))
                  .then(data => {
                      res.send(data)
