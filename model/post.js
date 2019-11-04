@@ -16,6 +16,22 @@ const postSchema = mongoose.Schema({
     createdAt: {
         type: Date,
         required: true
+    },
+    likes: {
+        type: Array,
+        required: true
+    },
+    likeCount: {
+        type: Number,
+        required: true
+    },
+    comments: {
+        type: Array,
+        required: true,
+    },
+    commentCount: {
+        type: Number,
+        required: true
     }
 })
 

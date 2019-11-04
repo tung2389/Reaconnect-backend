@@ -1,35 +1,27 @@
 const express = require('express')
-const passport = require('passport')
 const postModel = require('../model/post')
+const jwtAuthenticate = require('../middleware/jwtAuthenticate')
 
 const router = express.Router();
-router.post('/', (req, res, next) => {
-    const { content } = req.body;
-    passport.authenticate('jwt', {session: false}, (err, user) => {
-        if(err) {
-            return res.status(400).json({
-                message: "Error occured"
-            })
-        }
-        if(!user) {
-            return res.status(400).json({
-                message: "You must logged in first"
-            })
-        }
-        const newPost = postModel({
-            authorId: user._id,
-            author: user.username,
-            content: content,
-            createdAt: new Date()
+router.post('/', jwtAuthenticate, (req, res) => {
+    const { body: { content }, user } = req;
+    const newPost = postModel({
+        authorId: user._id,
+        author: user.username,
+        content: content,
+        createdAt: new Date(),
+        likes: [],
+        likeCount: 0,
+        comments: [],
+        commentCount: 0
+    })
+    newPost.save((err) => {
+        if(err) return console.log(err)
+        res.json({
+            message: "Your post has been uploaded",
+            post: newPost
         })
-        newPost.save((err) => {
-            if(err) return console.log(err)
-            res.json({
-                message: "Your post has been uploaded",
-                post: newPost
-            })
-        })
-    })(req, res, next)
+    })
 })
 
 module.exports = router
