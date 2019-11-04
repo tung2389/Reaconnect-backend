@@ -1,5 +1,4 @@
 const express = require('express')
-const passport = require('passport')
 const postModel = require('../model/post')
 const jwtAuthenticate = require('../middleware/jwtAuthenticate')
 
@@ -11,12 +10,14 @@ router.get('/', jwtAuthenticate, (req, res) => {
         .sort({createdAt: -1})
         .limit(Number(limit))
         .then(data => {
-        res.send(data)
+            delete data.likes
+            delete data.comments
+            res.send(data)
         })
         .catch(err => {
-        res.status(400).json({
-            message: "Error occured"
-        })
+            res.status(400).json({
+                message: "Error occured"
+            })
         })
 })
 
