@@ -17,7 +17,7 @@ function sendMail(email, token) {
         subject: 'Windlife project - Verify your email address',
         html: `<h4>Hello,</h4>
                 <h4>Follow this link to verify your account: </h4>
-                <a href = "http://localhost:3001/api/verify/${token}" target = "_blank">http://localhost:3001/api/verify/${token}</a>
+                <a href = "https://windlife.herokuapp.com/api/verify/${token}" target = "_blank">https://windlife.herokuapp.com/api/verify/${token}</a>
                 <h4>Note: This link wiil expire after 24 hours. If after 24 hours you haven't verified your account, please re-register to receive a new activation link</h4>
                 <h4>If you didn't ask to verify this address, you can ignore this email</h4>
                 <h4>Thanks</h4>

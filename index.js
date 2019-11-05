@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const passport = require('passport')
 const bodyParser = require('body-parser')
 const cors = require('cors');
+const path = require('path');
 require('./config/passport')(passport);
 require('dotenv').config()
 
@@ -31,15 +32,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(passport.initialize());
 
-app.get("/",(req,res) => {
-    res.send('Hello');
-})
 app.use("/api/login", login)
 app.use("/api/signup", signup)
 app.use("/api/verify", verify)
 app.use("/api/newpost", newpost)
 app.use("/api/post", post)
 app.use("/api/posts", posts)
+
+app.use(express.static(path.join(__dirname, '/build')));
+app.get('*', (req,res) =>{
+    res.sendFile(path.join(__dirname, '/build/index.html'));
+});
 
 app.listen(PORT, function() {
     console.log(`Server is running at port ${PORT}`)
