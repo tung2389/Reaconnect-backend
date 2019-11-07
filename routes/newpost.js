@@ -6,7 +6,7 @@ const router = express.Router();
 router.post('/', jwtAuthenticate, (req, res) => {
     const { body: { content }, user } = req;
     const newPost = postModel({
-        authorId: user._id,
+        authorId: user._id.toString(),
         author: user.username,
         content: content,
         createdAt: new Date(),

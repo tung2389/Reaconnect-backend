@@ -17,10 +17,12 @@ router.post("/", (req, res, next) => {
             return res.status(400).send(info)
         }
         //Not use session, so there is no need to use req.login()
-        const jwtToken = jwt.sign({id: user.id}, process.env.JWT_SECRET)
+        const jwtToken = jwt.sign({id: user._id}, process.env.JWT_SECRET)
+		user = user.toObject()
+		delete user.password
         return res.status(200).json({
             jwtToken: jwtToken,
-            id: user._id
+            user: user
         })
     })(req, res, next)
 });
