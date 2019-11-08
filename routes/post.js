@@ -57,7 +57,6 @@ router.post('/:id/likes', jwtAuthenticate, (req, res) => {
         }
         post.likes.push(user._id.toString());
         postModel.updateOne({ _id: post._id}, {
-            // likes: post.likes.push(user._id),
             likes: post.likes,
             likeCount: post.likeCount + 1
         }, (err) => {
@@ -117,7 +116,10 @@ router.post('/:id/comments', jwtAuthenticate, (req, res) => {
         	comments: post.comments,
         	commentCount: post.commentCount + 1
         }, (err) => {
-        	res.send({message: "You have commented on a post"})
+        	res.send({
+                message: "You have commented on a post",
+                comment: newComment
+            })
         })
     })
 })
@@ -130,14 +132,7 @@ router.get('/:id/comments', jwtAuthenticate, (req, res) => {
                 message: "404 Not found"
             })
         }
-        postModel.aggregate([
-        		{$match: {_id: postId}},
-                {$unwind: "$comments"},
-                {$sort: {"comments.createdAt": -1}},
-                {}
-            ]).then(data => {
-                res.send(data)
-            })
+        res.send(post.comments)
     })
 })
 
