@@ -27,15 +27,17 @@ router.put('/:id', jwtAuthenticate, (req, res) => {
                 message: "404 Not found"
             })
         }
-        if(user._id.toString() !== post._id.toString()) {
+        if(user._id.toString() !== post.authorId.toString()) {
             return res.status(400).json({
                 message: "You don't have permission to edit this post"
             })         
         }
-        postModel.updateOne({_id: postId}, {
-            content: content
-        }, (err) => {
-            res.send({message: "You have edited a post"})
+        post.content = content;
+        post.save((err, newPost) => {
+            res.send({
+                message: "You have edited a post",
+                post: newPost
+            })
         })
     })
 })
