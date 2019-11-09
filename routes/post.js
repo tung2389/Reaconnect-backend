@@ -42,6 +42,28 @@ router.put('/:id', jwtAuthenticate, (req, res) => {
     })
 })
 
+router.delete('/:id', jwtAuthenticate, (req, res) => {
+    const postId = req.params.id
+    const { user } = req;
+    postModel.findById(postId, (err, post) => {
+        if(err || !post) {
+            return res.status(400).json({
+                message: "404 Not found"
+            })
+        }
+        if(user._id.toString() !== post.authorId.toString()) {
+            return res.status(400).json({
+                message: "You don't have permission to delete this post"
+            })    
+        }
+        postModel.deleteOne({_id: post._id}, (err) => {
+            res.send({
+                message: "You have deleted a post"
+            })
+        })
+    })
+})
+
 router.post('/:id/likes', jwtAuthenticate, (req, res) => {
     const postId = req.params.id;
     const { user } = req;
