@@ -27,6 +27,11 @@ router.post('/', (req, res) => {
                 password: password,
                 username: username,
                 verified: false,
+                birthDate: new Date(),
+                company: "",
+                introduction: "",
+                image: "",
+                location: "",
                 createdAt: new Date()
             })
             bcrypt.genSalt(10, (err, salt) => {

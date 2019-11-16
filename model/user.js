@@ -17,6 +17,21 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         required: true
       },
+      birthDate: {
+        type: Date
+      },
+      company: {
+        type: String
+      },
+      introduction: {
+        type: String
+      },
+      image: {
+        type: String
+      },
+      location: {
+        type: String
+      },
       createdAt: {
         type: Date,
         required: true

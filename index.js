@@ -13,6 +13,7 @@ const verify = require('./routes/verify')
 const newpost = require('./routes/newpost')
 const post = require('./routes/post')
 const posts = require('./routes/posts')
+const profile = require('./routes/profile')
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/verify", verify)
 app.use("/api/newpost", newpost)
 app.use("/api/post", post)
 app.use("/api/posts", posts)
+app.use("/api/profile", profile)
 
 app.use(express.static(path.join(__dirname, '/build')));
 app.get('*', (req,res) =>{
