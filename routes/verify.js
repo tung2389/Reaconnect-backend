@@ -5,9 +5,9 @@ const router = express.Router()
 router.get('/:id', (req, res) => {
     let userId = req.params.id
     userModel.findById(userId, (err, user) => {
-        if(user.verified || !user) {
+        if(!user || user.verified) {
             res.status(400).json({
-                message: "Sorry, your request doesn't exit or the link has already been used"
+                message: "Sorry, your request doesn't exist or the link has expired"
             })
         }
         else {
