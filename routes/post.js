@@ -110,6 +110,12 @@ router.delete('/:id/likes', jwtAuthenticate, (req, res) => {
                 message: "Error, cannot unlike"
             })
         }
+        let index = post.likes.indexOf(user._id.toString())
+        if(index === -1) {
+            return res.status(400).json({
+                message: "You haven't liked this post"
+            })
+        }
         postModel.updateOne({_id: post._id}, {
             $pull: {likes: user._id.toString()},
             likeCount: post.likeCount - 1
