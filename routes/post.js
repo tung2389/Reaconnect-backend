@@ -166,9 +166,9 @@ router.get('/:id/comments', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.put('/:id/comments', jwtAuthenticate, (req, res) => {
-    const postId = req.params.id;
-    const commentId = req.query.id;
+router.put('/:postId/comments/:commentId', jwtAuthenticate, (req, res) => {
+    const postId = req.params.postId;
+    const commentId = req.params.commentId;
     const { user } = req;
     const { content } = req.body;
     postModel.findById(postId, (err, post) => {
@@ -197,9 +197,9 @@ router.put('/:id/comments', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.delete('/:id/comments', jwtAuthenticate, (req, res) => {
-    const postId = req.params.id;
-    const commentId = req.query.id;
+router.delete('/:postId/comments/:commentId', jwtAuthenticate, (req, res) => {
+    const postId = req.params.postId;
+    const commentId = req.params.commentId;
     const { user } = req;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
