@@ -28,9 +28,7 @@ router.get('/', jwtAuthenticate, (req, res) => {
             res.send(shortData)
         })
         .catch(err => {
-            res.status(400).json({
-                message: "Error occured"
-            })
+            res.status(500).send("Error occured")
         })
 })
 
@@ -59,9 +57,7 @@ router.get('/:id', jwtAuthenticate, (req, res) => {
     const postId = req.params.id
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
-            return res.status(400).json({
-                message: "404 Not found"
-            })
+            return res.status(404).send("404 Not found")
         }
         res.send(post)
     })
@@ -73,21 +69,17 @@ router.put('/:id', jwtAuthenticate, (req, res) => {
     const { content } = req.body;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
-            return res.status(400).json({
-                message: "404 Not found"
-            })
+            return res.status(404).send("404 Not found")
         }
         if(user._id.toString() !== post.authorId.toString()) {
-            return res.status(400).json({
-                message: "You don't have permission to edit this post"
-            })         
+            return res.status(403).send("You don't have permission to edit this post")         
         }
         post.content = content;
         post.save((err, newPost) => {
-            res.send({
-                message: "You have edited a post",
-                post: newPost
-            })
+            if(err) {
+                return res.status(500).send("Error occured")
+            }
+            res.send(newPost)
         })
     })
 })
@@ -97,19 +89,13 @@ router.delete('/:id', jwtAuthenticate, (req, res) => {
     const { user } = req;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
-            return res.status(400).json({
-                message: "404 Not found"
-            })
+            return res.status(404).send("404 Not found")
         }
         if(user._id.toString() !== post.authorId.toString()) {
-            return res.status(400).json({
-                message: "You don't have permission to delete this post"
-            })    
+            return res.status(403).send("You don't have permission to delete this post")    
         }
         postModel.deleteOne({_id: post._id}, (err) => {
-            res.send({
-                message: "You have deleted a post"
-            })
+            res.send("You have deleted a post")
         })
     })
 })
@@ -119,22 +105,18 @@ router.post('/:id/likes', jwtAuthenticate, (req, res) => {
     const { user } = req;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
-            return res.status(400).json({
-                message: "Error, cannot like"
-            })
+            return res.status(404).send("This post doesn't exist")
         }
         let index = post.likes.indexOf(user._id.toString())
         if(index !== -1) {
-            return res.status(400).json({
-                message: "You have already liked this post"
-            })
+            return res.status(400).send("You have already liked this post")
         }
         post.likes.push(user._id.toString());
         postModel.updateOne({ _id: post._id}, {
             likes: post.likes,
             likeCount: post.likeCount + 1
         }, (err) => {
-            res.send({message: "You have liked a post"})
+            res.send( "You have liked a post")
         })
     })
 })
@@ -143,9 +125,7 @@ router.get('/:id/likes', jwtAuthenticate, (req, res) => {
     const postId = req.params.id;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
-            return res.status(400).json({
-                message: "404 Not found"
-            })
+            return res.status(404).send("404 Not found")
         }
         res.send(post.likes)
     })
@@ -156,21 +136,17 @@ router.delete('/:id/likes', jwtAuthenticate, (req, res) => {
     const { user } = req;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
-            return res.status(400).json({
-                message: "Error, cannot unlike"
-            })
+            return res.status(404).send("This post doesn't exist")
         }
         let index = post.likes.indexOf(user._id.toString())
         if(index === -1) {
-            return res.status(400).json({
-                message: "You haven't liked this post"
-            })
+            return res.status(400).send("You haven't liked this post")
         }
         postModel.updateOne({_id: post._id}, {
             $pull: {likes: user._id.toString()},
             likeCount: post.likeCount - 1
         }, (err) => {
-            res.send({message: "You have unliked a post"})
+            res.send( "You have unliked a post")
         })
     })
 })
@@ -180,9 +156,7 @@ router.post('/:id/comments', jwtAuthenticate, (req, res) => {
     const { user, body: { content } } = req;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
-            return res.status(400).json({
-                message: "Error, cannot comment"
-            })
+            return res.status(404).send("This post doesn't exist")
         }
         let newComment = {
             authorId: user._id.toString(),
@@ -196,10 +170,7 @@ router.post('/:id/comments', jwtAuthenticate, (req, res) => {
         	comments: post.comments,
         	commentCount: post.commentCount + 1
         }, (err) => {
-        	res.send({
-                message: "You have commented on a post",
-                comment: newComment
-            })
+        	res.send(newComment)
         })
     })
 })
@@ -208,9 +179,7 @@ router.get('/:id/comments', jwtAuthenticate, (req, res) => {
     const postId = req.params.id;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
-            return res.status(400).json({
-                message: "404 Not found"
-            })
+            return res.status(404).send("This post doesn't exist")
         }
         res.send(post.comments)
     })
@@ -223,26 +192,20 @@ router.put('/:postId/comments/:commentId', jwtAuthenticate, (req, res) => {
     const { content } = req.body;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
-            return res.status(400).json({
-                message: "Error, cannot edit comment"
-            })
+            return res.status(404).send("This post doesn't exist")
         }
         let index = post.comments.map((item) => item._id).indexOf(commentId);
         if(index === -1) {
-            return res.status(400).json({
-                message: "404 not found"
-            })    
+            return res.status(404).send("This comment doesn't exist")    
         }
         if(user._id.toString() !== post.comments[index].authorId.toString()) {
-            return res.status(400).json({
-                message: "You don't have permission to edit this comment"
-            })
+            return res.status(403).send("You don't have permission to edit this comment")
         }
         post.comments[index].content = content;
         postModel.updateOne({_id: post._id}, {
             comments: post.comments
         }, (err) => {
-            res.send({message: "You have edited a comment"})
+            res.send( "You have edited a comment")
         })
     })
 })
@@ -253,27 +216,22 @@ router.delete('/:postId/comments/:commentId', jwtAuthenticate, (req, res) => {
     const { user } = req;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
-            return res.status(400).json({
-                message: "Error, cannot delete comment"
-            })
+            return res.status(404).send("This post doesn't exist")
         }
         let index = post.comments.map((item) => item._id).indexOf(commentId);
         if(index === -1) {
-            return res.status(400).json({
-                message: "404 not found"
-            })  
+            return res.status(404).send("This comment doesn't exist")  
         }
         if(user._id.toString() !== post.comments[index].authorId.toString()) {
-            return res.status(400).json({
-                message: "You don't have permission to delete this comment"
-            })
+            return res.status(403).send("You don't have permission to delete this comment")
         }
         postModel.updateOne({_id: post._id}, {
             $pull: {comments: {_id: commentId}},
             commentCount: post.commentCount - 1
         }, (err) => {
-            res.send({message: "You have deleted a comment"})
+            res.send( "You have deleted a comment")
         })
     })
 })
+
 module.exports = router
