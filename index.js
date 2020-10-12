@@ -10,8 +10,6 @@ require('dotenv').config()
 const login = require('./routes/login')
 const signup = require('./routes/signup')
 const verify = require('./routes/verify')
-const newpost = require('./routes/newpost')
-const post = require('./routes/post')
 const posts = require('./routes/posts')
 const profile = require('./routes/profile')
 
@@ -36,8 +34,6 @@ app.use(passport.initialize());
 app.use("/api/login", login)
 app.use("/api/signup", signup)
 app.use("/api/verify", verify)
-app.use("/api/newpost", newpost)
-app.use("/api/post", post)
 app.use("/api/posts", posts)
 app.use("/api/profile", profile)
 
