@@ -205,7 +205,7 @@ router.put('/:postId/comments/:commentId', jwtAuthenticate, (req, res) => {
         postModel.updateOne({_id: post._id}, {
             comments: post.comments
         }, (err) => {
-            res.send( "You have edited a comment")
+            res.send(post.comments[index])
         })
     })
 })
