@@ -2,9 +2,10 @@ const express = require('express')
 const userModel = require('../model//user')
 const jwtAuthenticate = require('../middleware/jwtAuthenticate')
 
-const router = express.Router();
+const router = express.Router()
+router.use(jwtAuthenticate)
 
-router.get('/:id', jwtAuthenticate, (req, res) => {
+router.get('/:id', (req, res) => {
 	let userId = req.params.id
 	userModel.findById(userId, (err, user) => {
 		if(err || !user) {

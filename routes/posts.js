@@ -5,8 +5,9 @@ const jwtAuthenticate = require('../middleware/jwtAuthenticate')
 const uuidv1 = require('uuid/v1');
 
 const router = express.Router()
+router.use(jwtAuthenticate)
 
-router.get('/', jwtAuthenticate, (req, res) => {
+router.get('/', (req, res) => {
     const { lastDate, limit } = req.query;
 	const { user } = req;
     postModel
@@ -32,7 +33,7 @@ router.get('/', jwtAuthenticate, (req, res) => {
         })
 })
 
-router.post('/', jwtAuthenticate, (req, res) => {
+router.post('/', (req, res) => {
     const { body: { content }, user } = req;
     const newPost = postModel({
         authorId: user._id.toString(),
@@ -53,7 +54,7 @@ router.post('/', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.get('/:id', jwtAuthenticate, (req, res) => {
+router.get('/:id', (req, res) => {
     const postId = req.params.id
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
@@ -63,7 +64,7 @@ router.get('/:id', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.put('/:id', jwtAuthenticate, (req, res) => {
+router.put('/:id', (req, res) => {
     const postId = req.params.id
     const { user } = req;
     const { content } = req.body;
@@ -84,7 +85,7 @@ router.put('/:id', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.delete('/:id', jwtAuthenticate, (req, res) => {
+router.delete('/:id', (req, res) => {
     const postId = req.params.id
     const { user } = req;
     postModel.findById(postId, (err, post) => {
@@ -100,7 +101,7 @@ router.delete('/:id', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.post('/:id/likes', jwtAuthenticate, (req, res) => {
+router.post('/:id/likes', (req, res) => {
     const postId = req.params.id;
     const { user } = req;
     postModel.findById(postId, (err, post) => {
@@ -121,7 +122,7 @@ router.post('/:id/likes', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.get('/:id/likes', jwtAuthenticate, (req, res) => {
+router.get('/:id/likes', (req, res) => {
     const postId = req.params.id;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
@@ -131,7 +132,7 @@ router.get('/:id/likes', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.delete('/:id/likes', jwtAuthenticate, (req, res) => {
+router.delete('/:id/likes', (req, res) => {
     const postId = req.params.id;
     const { user } = req;
     postModel.findById(postId, (err, post) => {
@@ -151,7 +152,7 @@ router.delete('/:id/likes', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.post('/:id/comments', jwtAuthenticate, (req, res) => {
+router.post('/:id/comments', (req, res) => {
     const postId = req.params.id;
     const { user, body: { content } } = req;
     postModel.findById(postId, (err, post) => {
@@ -175,7 +176,7 @@ router.post('/:id/comments', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.get('/:id/comments', jwtAuthenticate, (req, res) => {
+router.get('/:id/comments', (req, res) => {
     const postId = req.params.id;
     postModel.findById(postId, (err, post) => {
         if(err || !post) {
@@ -185,7 +186,7 @@ router.get('/:id/comments', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.put('/:postId/comments/:commentId', jwtAuthenticate, (req, res) => {
+router.put('/:postId/comments/:commentId', (req, res) => {
     const postId = req.params.postId;
     const commentId = req.params.commentId;
     const { user } = req;
@@ -210,7 +211,7 @@ router.put('/:postId/comments/:commentId', jwtAuthenticate, (req, res) => {
     })
 })
 
-router.delete('/:postId/comments/:commentId', jwtAuthenticate, (req, res) => {
+router.delete('/:postId/comments/:commentId', (req, res) => {
     const postId = req.params.postId;
     const commentId = req.params.commentId;
     const { user } = req;
