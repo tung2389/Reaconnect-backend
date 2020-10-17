@@ -11,7 +11,7 @@ const login = require('./routes/login')
 const signup = require('./routes/signup')
 const verify = require('./routes/verify')
 const posts = require('./routes/posts')
-const profile = require('./routes/profile')
+const user = require('./routes/user')
 
 const app = express();
 
@@ -35,7 +35,7 @@ app.use("/api/login", login)
 app.use("/api/signup", signup)
 app.use("/api/verify", verify)
 app.use("/api/posts", posts)
-app.use("/api/profile", profile)
+app.use("/api/user", user)
 
 app.use(express.static(path.join(__dirname, '/build')));
 app.get('*', (req,res) =>{
