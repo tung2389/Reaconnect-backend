@@ -40,7 +40,6 @@ router.post('/image', (req, res) => {
     const generatedToken = uuidv4()
 
     busboy.on('file', (fieldName, file, fileName, encoding, mimetype) => {
-        console.log(fieldName, file, fileName, encoding, mimetype)
 
         if (mimetype !== "image/jpeg" && mimetype !== "image/png") {
             return res.status(400).send("Image's file format is not accepted")
@@ -50,7 +49,6 @@ router.post('/image', (req, res) => {
         imageMimetype = mimetype
         imageName = `${uuidv4()}.${imageExtension}`        
         imagePath = path.join(os.tmpdir(), imageName)
-        console.log(imageName, imagePath)
         file.pipe(fs.createWriteStream(imagePath))
     })
 
@@ -71,14 +69,16 @@ router.post('/image', (req, res) => {
             userModel.findOneAndUpdate(
                 {_id: user._id}, 
                 {imageUrl: imageUrl},
-                (err, doc) => {
-                    console.log(doc)
-                    //res.send(doc)
+                {new: true},
+                (err, user) => {
+                    user = user.toObject()
+                    delete user.password
+                    res.send(user)
                 }
             )
         })
     })
-    busboy.end(req.rawBody)
+    req.pipe(busboy)
 })
 
 module.exports = router
