@@ -7,22 +7,29 @@ const jwtAuthenticate = require('../middleware/jwtAuthenticate')
 const router = express.Router()
 router.use(jwtAuthenticate)
 
+// Get user profile
+router.get('/', (req, res) => {
+    const { user } = req
+    userModel.findById(user._id, (err, userData) => {
+        if(err || !userData) {
+            return res.status(404).send("404 Not found")
+        }
+        res.send(userData)
+    })
+})
+
+
+// Get user profile with id
 router.get('/:id', (req, res) => {
 	let userId = req.params.id
 	userModel.findById(userId, (err, user) => {
 		if(err || !user) {
-            return res.status(400).json({
-                message: "Errors occur. Please try again later"
-            })
+            return res.status(400).send("Errors occur. Please try again later")
 		}
 		res.send(user);
 	})
 })
 
-// Update user profile
-router.put('/', (req, res) => {
-
-})
 
 // Upload profile image
 router.post('/image', (req, res) => {

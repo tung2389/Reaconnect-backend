@@ -44,7 +44,8 @@ module.exports = function(passport) {
                     if(err) {
                         return done(err, false)
                     }
-                    if(!user) {
+                    // if the user has changed password, then the old jwt is not valid
+                    if(!user || jwt_payload.password !== user.toObject().password) {
                         return done(null, false)
                     }
                     else {
