@@ -39,7 +39,6 @@ router.post('/image', (req, res) => {
     let imageMimetype
     const generatedToken = uuidv4()
 
-    console.log9
     busboy.on('file', (fieldName, file, fileName, encoding, mimetype) => {
         console.log(fieldName, file, fileName, encoding, mimetype)
 
