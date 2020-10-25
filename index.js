@@ -10,7 +10,7 @@ require('dotenv').config()
 const login = require('./routes/login')
 const signup = require('./routes/signup')
 const verify = require('./routes/verify')
-const posts = require('./routes/posts')
+const posts = require('./routes/posts/posts')
 const user = require('./routes/user')
 
 const app = express();
