@@ -7,6 +7,7 @@ const uuidv1 = require('uuid/v1');
 const router = express.Router()
 router.use(jwtAuthenticate)
 
+// Get a limited number of current posts
 router.get('/', (req, res) => {
     const { lastDate, limit } = req.query;
 	const { user } = req;
@@ -33,11 +34,14 @@ router.get('/', (req, res) => {
         })
 })
 
+// Upload post
 router.post('/', (req, res) => {
     const { body: { content }, user } = req;
     const newPost = postModel({
         authorId: user._id.toString(),
         author: user.username,
+        authorImageUrl: user.imageUrl,
+        imageUrl: "",
         content: content,
         createdAt: new Date(),
         likes: [],
@@ -54,6 +58,7 @@ router.post('/', (req, res) => {
     })
 })
 
+// Get a post with specific id
 router.get('/:id', (req, res) => {
     const postId = req.params.id
     postModel.findById(postId, (err, post) => {
@@ -64,6 +69,7 @@ router.get('/:id', (req, res) => {
     })
 })
 
+// Edit a post with specific id
 router.put('/:id', (req, res) => {
     const postId = req.params.id
     const { user } = req;
@@ -85,6 +91,7 @@ router.put('/:id', (req, res) => {
     })
 })
 
+// Delete a post with specific id
 router.delete('/:id', (req, res) => {
     const postId = req.params.id
     const { user } = req;
@@ -162,6 +169,7 @@ router.post('/:id/comments', (req, res) => {
         let newComment = {
             authorId: user._id.toString(),
             author: user.username,
+            authorImageUrl: user.imageUrl,
             content: content,
             createdAt: new Date(),
             _id: uuidv1()

@@ -9,9 +9,24 @@ const postSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    authorImageUrl: {
+        type: String
+    },
+    sharingInfo: {
+        author: {
+            type: String,
+            required: true
+        },
+        authorImageUrl: {
+            type: String
+        }
+    },
     content: {
         type: String,
         required: true
+    },
+    imageurl: {
+        type: String
     },
     createdAt: {
         type: Date,
