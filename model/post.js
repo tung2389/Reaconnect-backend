@@ -15,7 +15,6 @@ const postSchema = mongoose.Schema({
     sharingInfo: {
         author: {
             type: String,
-            required: true
         },
         authorImageUrl: {
             type: String

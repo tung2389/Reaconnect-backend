@@ -1,9 +1,13 @@
 const express = require('express')
+
+const { bucket } = require('../../config/admin')
+const config = require('../../config/firebaseConfig')
+const handleUploadImage = require('../../controller/handleUploadImage')
+
 const likes = require('./likes/likes')
 const comments = require('./comments/comments')
 const postModel = require('../../model/post')
 const jwtAuthenticate = require('../../middleware/jwtAuthenticate')
-const uuidv1 = require('uuid/v1');
 
 const router = express.Router()
 router.use(jwtAuthenticate)
@@ -41,26 +45,45 @@ router.get('/', (req, res) => {
 
 // Upload post
 router.post('/', (req, res) => {
-    const { body: { content }, user } = req;
-    const newPost = postModel({
-        authorId: user._id.toString(),
-        author: user.username,
-        authorImageUrl: user.imageUrl,
-        imageUrl: "",
-        content: content,
-        createdAt: new Date(),
-        likes: [],
-        likeCount: 0,
-        comments: [],
-        commentCount: 0
+    const BusBoy = require('busboy')
+    const busboy = new BusBoy({headers: req.headers})
+    const { user } = req
+    
+    content = ''
+
+    busboy.on('field', (fieldName, value) => {
+        if(fieldName == 'text') {
+            content = value
+        }
     })
-    newPost.save((err) => {
-        if(err) return console.log(err)
-        res.json({
-            message: "Your post has been uploaded",
-            post: newPost
+
+    handleUploadImage(busboy, bucket, (imageName, generatedToken) => {
+        let imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageName}?alt=media&token=${generatedToken}`
+        if(!imageName) { // There is no image
+            imageUrl = ''
+        }
+        const newPost = postModel({
+            authorId: user._id.toString(),
+            author: user.username,
+            authorImageUrl: user.imageUrl,
+            content: content,
+            imageUrl: imageUrl,
+            createdAt: new Date(),
+            likes: [],
+            likeCount: 0,
+            comments: [],
+            commentCount: 0
+        })
+        newPost.save((err) => {
+            if(err) return console.log(err)
+            res.json({
+                message: "Your post has been uploaded",
+                post: newPost
+            })
         })
     })
+
+    req.pipe(busboy)
 })
 
 // Get a post with specific id
