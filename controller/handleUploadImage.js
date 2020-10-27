@@ -23,19 +23,24 @@ function handleUploadImage(busboy, bucket, update) {
     })
 
     busboy.on('finish', () => {
-        bucket.upload(
-            imagePath,
-            {
-                metadata: {
+        if(imagePath) {
+            bucket.upload(
+                imagePath,
+                {
                     metadata: {
-                        firebaseStorageDownloadTokens: generatedToken,
-                    },
-                    contentType: imageMimetype
+                        metadata: {
+                            firebaseStorageDownloadTokens: generatedToken,
+                        },
+                        contentType: imageMimetype
+                    }
                 }
-            }
-        ).then(() => {
+            ).then(() => {
+                update(imageName, generatedToken)
+            })
+        }
+        else {
             update(imageName, generatedToken)
-        })
+        }
     })
 }
 
