@@ -8,6 +8,7 @@ const likes = require('./likes/likes')
 const comments = require('./comments/comments')
 const postModel = require('../../model/post')
 const jwtAuthenticate = require('../../middleware/jwtAuthenticate')
+const { text } = require('express')
 
 const router = express.Router()
 router.use(jwtAuthenticate)
@@ -99,24 +100,64 @@ router.get('/:id', (req, res) => {
 
 // Edit a post with specific id
 router.put('/:id', (req, res) => {
+    const BusBoy = require('busboy')
+    const busboy = new BusBoy({headers: req.headers})
+    
     const postId = req.params.id
     const { user } = req;
-    const { content } = req.body;
-    postModel.findById(postId, (err, post) => {
-        if(err || !post) {
-            return res.status(404).send("404 Not found")
+    
+    content = ''
+    imageStatus = undefined
+
+    busboy.on('field', (fieldName, value) => {
+        if(fieldName == 'text') {
+            content = value
         }
-        if(user._id.toString() !== post.authorId.toString()) {
-            return res.status(403).send("You don't have permission to edit this post")         
+        else if(fieldName == 'imageStatus') {
+            imageStatus = value
         }
-        post.content = content;
-        post.save((err, newPost) => {
-            if(err) {
-                return res.status(500).send("Error occured")
+    })
+
+    handleUploadImage(busboy, bucket, (imageName, generatedToken) => {
+        let imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageName}?alt=media&token=${generatedToken}`
+        postModel.findById(postId, (err, post) => {
+            if(err || !post) {
+                return res.status(404).send("404 Not found")
             }
-            res.send(newPost)
+            if(user._id.toString() !== post.authorId.toString()) {
+                return res.status(403).send("You don't have permission to edit this post")         
+            }
+
+            oldImageName = undefined
+            if(post.imageUrl) {
+                oldImageName = post.imageUrl.toString().split('/')[7].split('?')[0]
+            }
+            post.content = content
+            if(imageStatus == 'removed') {
+                post.imageUrl = ''
+            }
+            else if(imageStatus == 'changed') {
+                post.imageUrl = imageUrl
+            }
+
+            post.save((err, newPost) => {
+                if(err) {
+                    console.log(err)
+                    return res.status(500).send("Error occured")
+                }
+                res.send(newPost)
+
+                // Delete old image from firebase
+                if(imageStatus !== 'unchanged' && oldImageName) {
+                    bucket
+                        .file(oldImageName)
+                        .delete()
+                }
+            })
         })
     })
+
+    req.pipe(busboy)
 })
 
 // Delete a post with specific id
