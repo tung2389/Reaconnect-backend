@@ -46,15 +46,21 @@ function validateLogin(email, password) {
     }
 }
 
-function validateChangePassword(userId, oldPassword, newPassword, confirmPassword) {
+function validateEditUserProfile(username) {
+    if(!username) {
+        errors.username = "Username cannot be empty"
+    }
+    
+}
+
+async function validateChangePassword(userId, oldPassword, newPassword, confirmPassword) {
     let errors = {}
-    userModel.findById(userId, (err, user) => {
-        bcrypt.compare(oldPassword, user.password, (err, isMatch) => {
-            if(!isMatch){
-                errors.oldPassword = "Your old password is incorrect"
-            }
-        });
-    })
+    const user = await userModel.findById(userId).exec()
+    const isMatch = await bcrypt.compare(oldPassword, user.password)
+    
+    if(!isMatch){
+        errors.oldPassword = "Your old password is incorrect"
+    }
     if(newPassword.length < 8) {
         errors.newPassword = "Your password must have at least 8 characters"
     }

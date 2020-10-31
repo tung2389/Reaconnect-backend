@@ -43,7 +43,7 @@ router.put('/' ,(req, res) => {
 // Change user password
 router.put('/password', async (req, res) => {
     const { user, body: {oldPassword, newPassword, confirmPassword} } = req
-    let validation = validateChangePassword(user._id, oldPassword, newPassword, confirmPassword)
+    let validation = await validateChangePassword(user._id, oldPassword, newPassword, confirmPassword)
     if(validation !== true) {
         return res.status(400).send(validation)
     }
