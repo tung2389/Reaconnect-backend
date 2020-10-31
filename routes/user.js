@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 
 const config = require('../config/firebaseConfig')
 const { bucket } = require('../config/admin')
-const { validateChangePassword } = require('../controller/validateAccount')
+const { validateEditUserProfile, validateChangePassword } = require('../controller/validateAccount')
 const handleUploadImage = require('../controller/handleUploadImage')
 const userModel = require('../model/user')
 const jwtAuthenticate = require('../middleware/jwtAuthenticate')
@@ -28,6 +28,10 @@ router.get('/', (req, res) => {
 // Edit user profile
 router.put('/' ,(req, res) => {
     const { user, body: {username} } = req
+    const validation = validateEditUserProfile(username)
+    if(validation !== true) {
+        return res.status(400).send(validation)
+    }
     userModel.findOneAndUpdate(
         {_id: user._id}, 
         {username: username},

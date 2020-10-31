@@ -47,10 +47,16 @@ function validateLogin(email, password) {
 }
 
 function validateEditUserProfile(username) {
+    errors = {}
     if(!username) {
         errors.username = "Username cannot be empty"
     }
-    
+    if(!errors.hasOwnProperty('username')) {
+        return true
+    }
+    else {
+        return errors
+    }
 }
 
 async function validateChangePassword(userId, oldPassword, newPassword, confirmPassword) {
@@ -78,4 +84,4 @@ async function validateChangePassword(userId, oldPassword, newPassword, confirmP
     }
 }
 
-module.exports = { validateSignup, validateLogin, validateChangePassword }
+module.exports = { validateSignup, validateLogin, validateEditUserProfile, validateChangePassword }
