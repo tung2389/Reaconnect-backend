@@ -94,6 +94,9 @@ router.get('/:id', (req, res) => {
         if(err || !post) {
             return res.status(404).send("404 Not found")
         }
+        post = post.toObject()
+        delete post.likes
+        delete post.comments
         res.send(post)
     })
 })
