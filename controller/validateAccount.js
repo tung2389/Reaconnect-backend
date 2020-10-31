@@ -1,4 +1,6 @@
 const validator = require('validator')
+const bcrypt = require('bcryptjs')
+const userModel = require("../model/user")
 
 function validateSignup(email, password, confirmPassword, username) {
     let errors = {}
@@ -44,4 +46,30 @@ function validateLogin(email, password) {
     }
 }
 
-module.exports = { validateSignup, validateLogin }
+function validateChangePassword(userId, oldPassword, newPassword, confirmPassword) {
+    let errors = {}
+    userModel.findById(userId, (err, user) => {
+        bcrypt.compare(oldPassword, user.password, (err, isMatch) => {
+            if(!isMatch){
+                errors.oldPassword = "Your old password is incorrect"
+            }
+        });
+    })
+    if(newPassword.length < 8) {
+        errors.newPassword = "Your password must have at least 8 characters"
+    }
+    if(newPassword !== confirmPassword) {
+        errors.confirmPassword = "Two passwords are not match"
+    }
+    if(!errors.hasOwnProperty('oldPassword') &&
+       !errors.hasOwnProperty('newPassword') &&
+       !errors.hasOwnProperty('confirmPassword')
+    ) {
+        return true
+    }
+    else {
+        return errors
+    }
+}
+
+module.exports = { validateSignup, validateLogin, validateChangePassword }

@@ -1,9 +1,15 @@
 const express = require('express')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+
 const config = require('../config/firebaseConfig')
 const { bucket } = require('../config/admin')
+const { validateChangePassword } = require('../controller/validateAccount')
 const handleUploadImage = require('../controller/handleUploadImage')
 const userModel = require('../model/user')
 const jwtAuthenticate = require('../middleware/jwtAuthenticate')
+
+require('dotenv').config()
 
 const router = express.Router()
 router.use(jwtAuthenticate)
@@ -19,6 +25,49 @@ router.get('/', (req, res) => {
     })
 })
 
+// Edit user profile
+router.put('/' ,(req, res) => {
+    const { user, body: {username} } = req
+    userModel.findOneAndUpdate(
+        {_id: user._id}, 
+        {username: username},
+        {new: true},
+        (err, user) => {
+            user = user.toObject()
+            delete user.password
+            res.send(user)
+        }
+    )
+})
+
+// Change user password
+router.put('/password', async (req, res) => {
+    const { user, body: {oldPassword, newPassword, confirmPassword} } = req
+    let validation = validateChangePassword(user._id, oldPassword, newPassword, confirmPassword)
+    if(validation !== true) {
+        return res.status(400).send(validation)
+    }
+
+    const salt = await bcrypt.genSalt(10)
+    const hashPassword = await bcrypt.hash(newPassword, salt)
+    userModel.findOneAndUpdate(
+        {_id: user._id}, 
+        {password: hashPassword},
+        {new: true},
+        () => {
+            const jwtToken = jwt.sign(
+                {
+                    id: user._id,
+                    password: hashPassword
+                }, 
+                process.env.JWT_SECRET
+            )
+            return res.status(200).json({
+                jwtToken: jwtToken,
+            })
+        }
+    )
+})
 
 // Get user profile with id
 router.get('/:id', (req, res) => {
