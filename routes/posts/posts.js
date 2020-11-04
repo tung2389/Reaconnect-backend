@@ -174,12 +174,17 @@ router.delete('/:id', (req, res) => {
         if(user._id.toString() !== post.authorId.toString()) {
             return res.status(403).send("You don't have permission to delete this post")    
         }
-        imageName = post.imageUrl.toString().split('/')[7].split('?')[0]
+        imageName = undefined
+        if(post.imageUrl) {
+            imageName = post.imageUrl.toString().split('/')[7].split('?')[0]
+        }
         postModel.deleteOne({_id: post._id}, (err) => {
             res.send("You have deleted a post")
-            bucket
-                .file(imageName)
-                .delete()
+            if(imageName) {
+                bucket
+                    .file(imageName)
+                    .delete()
+            }
         })
     })
 })
