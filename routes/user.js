@@ -17,12 +17,16 @@ router.use(jwtAuthenticate)
 // Get user profile
 router.get('/', (req, res) => {
     const { user } = req
-    userModel.findById(user._id, (err, userData) => {
-        if(err || !userData) {
-            return res.status(404).send("404 Not found")
+    userModel.findById(
+        user._id, 
+        {password: 0}, 
+        (err, userData) => {
+            if(err || !userData) {
+                return res.status(404).send("404 Not found")
+            }
+            res.send(userData)
         }
-        res.send(userData)
-    })
+    )
 })
 
 // Edit user profile
@@ -32,13 +36,14 @@ router.put('/' ,(req, res) => {
     if(validation !== true) {
         return res.status(400).send(validation)
     }
-    userModel.findOneAndUpdate(
-        {_id: user._id}, 
+    userModel.findByIdAndUpdate(
+        user._id, 
         {username: username},
-        {new: true},
+        {
+            new: true,
+            fields: {password: 0}
+        },
         (err, user) => {
-            user = user.toObject()
-            delete user.password
             res.send(user)
         }
     )
