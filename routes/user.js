@@ -101,7 +101,10 @@ router.post('/image', (req, res) => {
         userModel.findOneAndUpdate(
             {_id: user._id}, 
             {imageUrl: imageUrl},
-            {new: false}, // Get the old user to take the oldImageName
+            {
+                new: false,
+                fields: {password: 0}
+            }, // Get the old user to take the oldImageName
             (err, user) => {
                 user = user.toObject()
                 oldImageName = user.imageUrl.toString().split('/')[7].split('?')[0]
@@ -109,7 +112,6 @@ router.post('/image', (req, res) => {
                 // Modify the imageUrl in newUser
                 newUser = user
                 newUser.imageUrl = imageUrl
-                delete newUser.password // Remove the password field
                 res.send(newUser)
 
                 // Delete old image from firebase

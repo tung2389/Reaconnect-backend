@@ -22,7 +22,12 @@ router.get('/', (req, res) => {
     const { lastDate, limit } = req.query;
 	const { user } = req;
     postModel
-        .find({createdAt: {$lt: lastDate}})
+        .find(
+            {createdAt: {$lt: lastDate}},
+            {
+                comments: 0
+            }
+        )
         .sort({createdAt: -1})
         .limit(Number(limit))
         .then(data => {
@@ -32,9 +37,8 @@ router.get('/', (req, res) => {
 				if(index !== -1)
 					post.likedByUser = true;
 				else 
-					post.likedByUser = false;
-				delete post.likes
-				delete post.comments
+                    post.likedByUser = false;
+                delete post.likes
 				return post
 			})
             res.send(shortData)
@@ -90,15 +94,26 @@ router.post('/', (req, res) => {
 // Get a post with specific id
 router.get('/:id', (req, res) => {
     const postId = req.params.id
-    postModel.findById(postId, (err, post) => {
-        if(err || !post) {
-            return res.status(404).send("404 Not found")
+    const { user } = req;
+    postModel.findById(
+        postId, 
+        {
+            comments: 0
+        },
+        (err, post) => {
+            if(err || !post) {
+                return res.status(404).send("404 Not found")
+            }
+            post = post.toObject()
+            let index = post.likes.indexOf(user._id.toString())
+            if(index !== -1)
+                post.likedByUser = true;
+            else 
+                post.likedByUser = false;
+            delete post.likes
+            res.send(post)
         }
-        post = post.toObject()
-        delete post.likes
-        delete post.comments
-        res.send(post)
-    })
+    )
 })
 
 // Edit a post with specific id
