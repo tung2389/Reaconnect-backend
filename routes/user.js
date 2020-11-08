@@ -7,6 +7,7 @@ const { bucket } = require('../config/admin')
 const { validateEditUserProfile, validateChangePassword } = require('../controller/validateAccount')
 const handleUploadImage = require('../controller/handleUploadImage')
 const userModel = require('../model/user')
+const postModel = require('../model/post')
 const jwtAuthenticate = require('../middleware/jwtAuthenticate')
 
 require('dotenv').config()
@@ -80,13 +81,19 @@ router.put('/password', async (req, res) => {
 
 // Get user profile with id
 router.get('/:id', (req, res) => {
-	let userId = req.params.id
-	userModel.findById(userId, (err, user) => {
-		if(err || !user) {
-            return res.status(400).send("Errors occur. Please try again later")
-		}
-		res.send(user);
-	})
+	const userId = req.params.id
+    const user = await userModel
+                        .findById(
+                            userId, 
+                            {
+                                 password: 0
+                            }
+                        )
+                        .exec()
+    if(!user) {
+        return res.status(404).send("404 Not found")
+    }
+    res.send(user)
 })
 
 
