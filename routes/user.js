@@ -80,7 +80,7 @@ router.put('/password', async (req, res) => {
 })
 
 // Get user profile with id
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
 	const userId = req.params.id
     const user = await userModel
                         .findById(

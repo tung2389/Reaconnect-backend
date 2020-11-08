@@ -18,34 +18,49 @@ router.use('/:id/likes', likes)
 router.use('/:id/comments', comments)
 
 // Get a limited number of current posts
-router.get('/', (req, res) => {
-    const { lastDate, limit } = req.query;
-	const { user } = req;
-    postModel
-        .find(
-            {createdAt: {$lt: lastDate}},
-            {
-                comments: 0
-            }
-        )
-        .sort({createdAt: -1})
-        .limit(Number(limit))
-        .then(data => {
-            let shortData = data.map((post) => {
-				post = post.toObject()
-				let index = post.likes.indexOf(user._id.toString())
-				if(index !== -1)
-					post.likedByUser = true;
-				else 
-                    post.likedByUser = false;
-                delete post.likes
-				return post
-			})
-            res.send(shortData)
-        })
-        .catch(err => {
-            res.status(500).send("Error occured")
-        })
+router.get('/', async (req, res) => {
+    const { lastDate, limit, authorId } = req.query;
+    const { user } = req;
+    let data
+    if(!authorId) {
+        data = await postModel
+                        .find(
+                            {
+                                createdAt: {$lt: lastDate}
+                            },
+                            {
+                                comments: 0
+                            }
+                        )
+                        .sort({createdAt: -1})
+                        .limit(Number(limit))
+    }
+    else {
+        data = await postModel
+                        .find(
+                            {
+                                createdAt: {$lt: lastDate},
+                                authorId: authorId
+                            },
+                            {
+                                comments: 0
+                            }
+                        )
+                        .sort({createdAt: -1})
+                        .limit(Number(limit))
+    }
+    
+    let shortData = data.map((post) => {
+        post = post.toObject()
+        let index = post.likes.indexOf(user._id.toString())
+        if(index !== -1)
+            post.likedByUser = true;
+        else 
+            post.likedByUser = false;
+        delete post.likes
+        return post
+    })
+    res.send(shortData)
 })
 
 // Upload post
