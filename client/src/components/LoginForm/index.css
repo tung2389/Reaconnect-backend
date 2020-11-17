@@ -1,0 +1,13 @@
+.flexContainer{
+    display: flex;
+    align-items: flex-end;
+}
+.login{
+    margin: 0;
+    margin-left: 4px;
+}
+.ask{
+    height: 66px;
+    padding-top: 33px;
+    border-top: 1px solid #ddd;
+}

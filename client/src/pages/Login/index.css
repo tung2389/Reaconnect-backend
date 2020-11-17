@@ -1,0 +1,24 @@
+.loginPage{
+    background: #3f51b5;
+    min-height: 100vh;
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+.connectIcon{
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    width: 80px;
+    height: 80px;
+    padding-bottom: 10px;
+}
+.name {
+    display: table;
+    letter-spacing: 4px;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    color: white;
+    font-weight: bold;
+    margin-bottom: 20px;
+}

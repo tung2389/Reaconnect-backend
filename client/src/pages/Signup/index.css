@@ -1,0 +1,19 @@
+.signupPage{
+    background: #3f51b5;
+    min-height: 100vh;
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+.container {
+    display: inline-flex;
+    background: white;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    padding: 40px;
+    border-radius: 6px;
+}
+.description{
+    width: 400px;
+    margin-right: 20px;
+}

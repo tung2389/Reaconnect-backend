@@ -1,0 +1,8 @@
+.flexContainer{
+    display: flex;
+    align-items: flex-end;
+}
+.signup{
+    margin: 0;
+    margin-left: 4px;
+}
