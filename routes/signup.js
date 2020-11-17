@@ -40,9 +40,7 @@ router.post('/', (req, res) => {
                     newUser.save(err => {
                         if(err) return console.log(err);
                         sendMail(email, newUser._id)
-                        res.json({
-							message: "Please check your email to verify your account"
-						})
+                        res.send("Please check your email to verify your account. If you don't see an email, please wait to 5 minutes or check your spam folder")
                     })
                 })
             })
